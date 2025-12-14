@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест по программированию на C/C++</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .question {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .question h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .options {
+            margin: 15px 0;
+        }
+        
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #eef7ff;
+        }
+        
+        .option.selected {
+            background-color: #d4edff;
+            border-left: 4px solid #3498db;
+        }
+        
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .feedback {
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .correct {
+            background-color: #d4f8d4;
+            color: #2d5a2d;
+            border-left: 4px solid #28a745;
+        }
+        
+        .incorrect {
+            background-color: #f8d4d4;
+            color: #5a2d2d;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+            margin: 0 5px;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .finish-btn {
+            background-color: #e74c3c;
+        }
+        
+        .finish-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .image-option {
+            text-align: center;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        
+        .image-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-option.selected {
+            border-color: #3498db;
+            background-color: #eef7ff;
+        }
+        
+        .image-option img {
+            max-width: 250px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .image-label {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .result {
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success {
+            background-color: #d4f8d4;
+            color: #2d5a2d;
+            border: 2px solid #28a745;
+        }
+        
+        .failure {
+            background-color: #f8d4d4;
+            color: #5a2d2d;
+            border: 2px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Тест по программированию на C/C++</h1>
+        <p>Проверьте свои знания основ программирования на C/C++</p>
+    </div>
+    
+    <div id="start-screen">
+        <div class="question">
+            <h3>Инструкция</h3>
+            <p>Тест состоит из 25 случайных вопросов по программированию на C/C++.</p>
+            <p>Выберите один вариант ответа для каждого вопроса. После выбора ответа вы сразу увидите результат и не сможете изменить ответ.</p>
+            <p>В конце теста вы увидите свой общий результат.</p>
+            <button id="start-btn" class="button">Начать тест</button>
+        </div>
+    </div>
+    
+    <div id="test-screen" class="hidden">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div id="question-container"></div>
+        
+        <div class="controls">
+            <button id="prev-btn" class="button" disabled>Предыдущий</button>
+            <div>
+                <button id="finish-btn" class="button finish-btn">Завершить тест</button>
+                <button id="next-btn" class="button">Следующий</button>
+            </div>
+        </div>
+        
+        <div class="score">
+            Вопрос <span id="current-question">1</span> из <span id="total-questions">25</span>
+        </div>
+    </div>
+    
+    <div id="result-screen" class="hidden">
+        <div class="question">
+            <h3>Результаты теста</h3>
+            <div id="final-score" class="score"></div>
+            <div id="test-result" class="result"></div>
+            <p id="result-message"></p>
+            <button id="restart-btn" class="button">Пройти тест снова</button>
+        </div>
+    </div>
+
+    <script>
+        // База вопросов и ответов (увеличено количество вопросов)
+        const questions = [
+            // Вопросы с изображениями
+            {
+                question: "Какая из представленных блок-схем соответствует разветвляющемуся алгоритму?",
+                type: "images",
+                images: [
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/If-Then-Else-diagram.svg/400px-If-Then-Else-diagram.svg.png",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/While-loop-diagram.svg/400px-While-loop-diagram.svg.png",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/500px-Von_Neumann_Architecture.svg.png"
+                ],
+                labels: ["Блок-схема A", "Блок-схема B", "Блок-схема C"],
+                correct: 0
+            },
+            {
+                question: "Какая из представленных блок-схем соответствует циклическому алгоритму?",
+                type: "images",
+                images: [
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/If-Then-Else-diagram.svg/400px-If-Then-Else-diagram.svg.png",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/While-loop-diagram.svg/400px-While-loop-diagram.svg.png",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/500px-Von_Neumann_Architecture.svg.png"
+                ],
+                labels: ["Блок-схема A", "Блок-схема B", "Блок-схема C"],
+                correct: 1
+            },
+            {
+                question: "Какая из представленных схем соответствует обобщенной схеме компьютера?",
+                type: "images",
+                images: [
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/If-Then-Else-diagram.svg/400px-If-Then-Else-diagram.svg.png",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/While-loop-diagram.svg/400px-While-loop-diagram.svg.png",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Von_Neumann_Architecture.svg/500px-Von_Neumann_Architecture.svg.png"
+                ],
+                labels: ["Блок-схема A", "Блок-схема B", "Блок-схема C"],
+                correct: 2
+            },
+            // Остальные вопросы
+            {
+                question: "Что такое информация?",
+                options: [
+                    "Сведения об окружающем мире, которые уменьшают неопределенность",
+                    "Данные, хранящиеся в памяти компьютера",
+                    "Любые символы, введенные с клавиатуры",
+                    "Результат выполнения программы"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое алгоритм?",
+                options: [
+                    "Точная, конечная последовательность действий, приводящая к решению задачи",
+                    "Любая программа на языке C++",
+                    "Способ хранения данных в памяти",
+                    "Метод отладки программ"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какие формы представления алгоритмов существуют?",
+                options: [
+                    "Словесная, блок-схема, псевдокод, программа на языке программирования",
+                    "Только блок-схемы и программы",
+                    "Только словесная форма и псевдокод",
+                    "Графическая, табличная, текстовая"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой тип данных в C++ используется для хранения символов?",
+                options: [
+                    "char",
+                    "string",
+                    "int",
+                    "float"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой тип данных в C++ используется для хранения целых чисел?",
+                options: [
+                    "int",
+                    "char",
+                    "float",
+                    "double"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для базового присваивания в C++?",
+                options: [
+                    "=",
+                    "==",
+                    ":=",
+                    "<-"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что означает оператор += в C++?",
+                options: [
+                    "Составное присваивание (a += 5 эквивалентно a = a + 5)",
+                    "Присваивание с проверкой",
+                    "Присваивание с инкрементом",
+                    "Присваивание с конкатенацией"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция является главной в программе на C++?",
+                options: [
+                    "main()",
+                    "start()",
+                    "init()",
+                    "run()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая библиотека используется для потокового ввода-вывода в C++?",
+                options: [
+                    "&lt;iostream&gt;",
+                    "&lt;stdio.h&gt;",
+                    "&lt;stream&gt;",
+                    "&lt;io&gt;"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для ввода данных в C++?",
+                options: [
+                    "cin >>",
+                    "cout <<",
+                    "scanf",
+                    "input"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для вывода данных в C++?",
+                options: [
+                    "cout <<",
+                    "cin >>",
+                    "printf",
+                    "output"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для выхода из цикла?",
+                options: [
+                    "break",
+                    "exit",
+                    "stop",
+                    "return"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор перехода не рекомендуется к использованию?",
+                options: [
+                    "goto",
+                    "break",
+                    "continue",
+                    "return"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для организации цикла с предусловием?",
+                options: [
+                    "while",
+                    "for",
+                    "do-while",
+                    "loop"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для организации цикла с постусловием?",
+                options: [
+                    "do-while",
+                    "while",
+                    "for",
+                    "repeat"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для организации цикла с известным количеством итераций?",
+                options: [
+                    "for",
+                    "while",
+                    "do-while",
+                    "loop"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое пространство имен (namespace) в C++?",
+                options: [
+                    "Область видимости, предотвращающая конфликты имен",
+                    "Место хранения переменных в памяти",
+                    "Способ организации файлов в проекте",
+                    "Метод группировки функций"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод используется для пошагового выполнения программы в отладчике?",
+                options: [
+                    "Step Into",
+                    "Run",
+                    "Build",
+                    "Compile"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какие окна используются для наблюдения за переменными при отладке?",
+                options: [
+                    "Watch, Autos, Locals",
+                    "Variables, Console, Output",
+                    "Debug, Trace, Monitor",
+                    "Inspect, View, Check"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод численного интегрирования использует приближение площади трапециями?",
+                options: [
+                    "Метод трапеций",
+                    "Метод парабол (Симпсона)",
+                    "Метод дихотомии",
+                    "Метод касательных (Ньютона)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод численного интегрирования использует квадратичные приближения?",
+                options: [
+                    "Метод парабол (Симпсона)",
+                    "Метод трапеций",
+                    "Метод дихотомии",
+                    "Метод касательных (Ньютона)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод поиска корня уравнения использует деление отрезка пополам?",
+                options: [
+                    "Метод дихотомии",
+                    "Метод трапеций",
+                    "Метод парабол (Симпсона)",
+                    "Метод касательных (Ньютона)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод поиска корня уравнения требует вычисления производной?",
+                options: [
+                    "Метод касательных (Ньютона)",
+                    "Метод трапеций",
+                    "Метод парабол (Симпсона)",
+                    "Метод дихотомии (половинного деления)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой модификатор убирает знак у целочисленного типа?",
+                options: [
+                    "unsigned",
+                    "signed",
+                    "static",
+                    "const"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая операция выполняет побитовое И?",
+                options: [
+                    "&",
+                    "|",
+                    "^",
+                    "~"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая операция выполняет побитовое ИЛИ?",
+                options: [
+                    "|",
+                    "&",
+                    "^",
+                    "~"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется строка в стиле C?",
+                options: [
+                    "char str[100];",
+                    "string str;",
+                    "char *str;",
+                    "str::string;"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется строка в стиле C++?",
+                options: [
+                    "string str;",
+                    "char str[100];",
+                    "str string;",
+                    "String str;"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция используется для определения длины строки в C?",
+                options: [
+                    "strlen()",
+                    "length()",
+                    "sizeof()",
+                    "strlength()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция используется для копирования строк в C?",
+                options: [
+                    "strcpy()",
+                    "strcat()",
+                    "strcmp()",
+                    "strdup()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция используется для конкатенации строк в C?",
+                options: [
+                    "strcat()",
+                    "strcpy()",
+                    "strcmp()",
+                    "strconcat()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое указатель?",
+                options: [
+                    "Переменная, хранящая адрес памяти другой переменной",
+                    "Специальный тип данных для хранения чисел",
+                    "Функция для работы с памятью",
+                    "Оператор для доступа к элементам массива"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется указатель на целое число?",
+                options: [
+                    "int *p;",
+                    "pointer int p;",
+                    "int p*;",
+                    "&int p;"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для выделения памяти под массив в C++?",
+                options: [
+                    "new[]",
+                    "malloc",
+                    "alloc",
+                    "create"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для освобождения памяти в C++?",
+                options: [
+                    "delete[]",
+                    "free",
+                    "release",
+                    "remove"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как передаются массивы в функции в C++?",
+                options: [
+                    "По указателю на первый элемент",
+                    "По значению",
+                    "По ссылке",
+                    "По копии"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется прототип функции?",
+                options: [
+                    "int sum(int a, int b);",
+                    "int sum(int a, int b) {}",
+                    "function sum(a, b);",
+                    "def sum(a, b):"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой способ передачи аргументов позволяет функции изменять оригинальную переменную?",
+                options: [
+                    "По указателю или по ссылке",
+                    "Только по значению",
+                    "Только по указателю",
+                    "Только по ссылке"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое класс памяти static?",
+                options: [
+                    "Переменная, сохраняющая значение между вызовами функции",
+                    "Переменная, доступная только в текущем блоке",
+                    "Переменная, хранящаяся в регистре процессора",
+                    "Глобальная переменная"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое класс памяти extern?",
+                options: [
+                    "Объявление переменной, определенной в другом файле",
+                    "Локальная переменная функции",
+                    "Статическая переменная",
+                    "Переменная, хранящаяся в регистре"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется двумерный массив (матрица) в C++?",
+                options: [
+                    "int matrix[3][4];",
+                    "matrix int[3,4];",
+                    "int matrix(3,4);",
+                    "array matrix[3][4];"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как получить доступ к элементу матрицы через указатель?",
+                options: [
+                    "*(*(matrix + i) + j)",
+                    "matrix[i,j]",
+                    "matrix(i)(j)",
+                    "&matrix[i][j]"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется указатель на указатель?",
+                options: [
+                    "int **pp;",
+                    "int *p*;",
+                    "pointer pointer int pp;",
+                    "int &pp;"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция используется для выделения памяти в C?",
+                options: [
+                    "malloc()",
+                    "new",
+                    "alloc()",
+                    "create()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция используется для освобождения памяти в C?",
+                options: [
+                    "free()",
+                    "delete",
+                    "release()",
+                    "remove()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое тернарный оператор?",
+                options: [
+                    "Условная операция ?:",
+                    "Оператор if-else",
+                    "Оператор switch",
+                    "Логический оператор &&"
+                ],
+                correct: 0
+            }
+        ];
+
+        // Переменные состояния теста
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+        let selectedQuestions = [];
+        let answerSelected = []; // Флаг, указывающий, был ли выбран ответ для каждого вопроса
+
+        // Элементы DOM
+        const startScreen = document.getElementById('start-screen');
+        const testScreen = document.getElementById('test-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionContainer = document.getElementById('question-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const finalScore = document.getElementById('final-score');
+        const testResult = document.getElementById('test-result');
+        const resultMessage = document.getElementById('result-message');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressBar = document.getElementById('progress');
+
+        // Функция для перемешивания массива (алгоритм Фишера-Йейтса)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Функция для перемешивания вариантов ответов в вопросах
+        function shuffleQuestions(questions) {
+            return questions.map(question => {
+                // Создаем копию вопроса
+                const shuffledQuestion = {...question};
+                
+                // Для вопросов с изображениями не перемешиваем варианты
+                if (shuffledQuestion.type === 'images') {
+                    return shuffledQuestion;
+                }
+                
+                // Сохраняем правильный ответ
+                const correctAnswer = shuffledQuestion.options[shuffledQuestion.correct];
+                
+                // Перемешиваем варианты ответов
+                shuffledQuestion.options = shuffleArray([...shuffledQuestion.options]);
+                
+                // Обновляем индекс правильного ответа
+                shuffledQuestion.correct = shuffledQuestion.options.indexOf(correctAnswer);
+                
+                return shuffledQuestion;
+            });
+        }
+
+        // Функция для выбора случайных вопросов
+        function selectRandomQuestions() {
+            const shuffled = [...questions].sort(() => 0.5 - Math.random());
+            selectedQuestions = shuffled.slice(0, 25);
+            
+            // Перемешиваем варианты ответов в выбранных вопросах
+            selectedQuestions = shuffleQuestions(selectedQuestions);
+        }
+
+        // Функция для обновления прогресс-бара
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / selectedQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Функция для отображения вопроса
+        function displayQuestion() {
+            const question = selectedQuestions[currentQuestionIndex];
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            totalQuestionsSpan.textContent = selectedQuestions.length;
+            
+            let questionHTML = '';
+            
+            // Для вопросов с изображениями
+            if (question.type === 'images') {
+                let imagesHTML = '';
+                question.images.forEach((image, index) => {
+                    const isSelected = userAnswers[currentQuestionIndex] === index;
+                    imagesHTML += `
+                        <div class="image-option ${isSelected ? 'selected' : ''}" data-index="${index}">
+                            <img src="${image}" alt="Блок-схема" onerror="this.src='https://via.placeholder.com/250x150/4A90E2/FFFFFF?text=Изображение+не+загружено'">
+                            <div class="image-label">${question.labels[index]}</div>
+                        </div>
+                    `;
+                });
+                
+                questionHTML = `
+                    <div class="question">
+                        <h3>Вопрос ${currentQuestionIndex + 1}</h3>
+                        <p>${question.question}</p>
+                        <div class="image-container">
+                            ${imagesHTML}
+                        </div>
+                        <div id="feedback-${currentQuestionIndex}" class="feedback"></div>
+                    </div>
+                `;
+            } else {
+                // Для обычных вопросов
+                let optionsHTML = '';
+                question.options.forEach((option, index) => {
+                    const isSelected = userAnswers[currentQuestionIndex] === index;
+                    const isDisabled = answerSelected[currentQuestionIndex] ? 'disabled' : '';
+                    optionsHTML += `
+                        <div class="option ${isSelected ? 'selected' : ''} ${isDisabled}" data-index="${index}">
+                            ${option}
+                        </div>
+                    `;
+                });
+                
+                questionHTML = `
+                    <div class="question">
+                        <h3>Вопрос ${currentQuestionIndex + 1}</h3>
+                        <p>${question.question}</p>
+                        <div class="options">
+                            ${optionsHTML}
+                        </div>
+                        <div id="feedback-${currentQuestionIndex}" class="feedback"></div>
+                    </div>
+                `;
+            }
+            
+            questionContainer.innerHTML = questionHTML;
+            
+            // Добавляем обработчики событий для вариантов ответов
+            if (question.type === 'images') {
+                document.querySelectorAll('.image-option').forEach(option => {
+                    option.addEventListener('click', handleOptionClick);
+                });
+            } else {
+                document.querySelectorAll('.option').forEach(option => {
+                    option.addEventListener('click', handleOptionClick);
+                });
+            }
+            
+            // Обновляем состояние кнопок
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === selectedQuestions.length - 1;
+            
+            // Обновляем прогресс-бар
+            updateProgressBar();
+            
+            // Показываем feedback, если ответ уже выбран
+            if (userAnswers[currentQuestionIndex] !== undefined) {
+                showFeedback(currentQuestionIndex);
+            }
+        }
+
+        // Обработчик выбора варианта ответа
+        function handleOptionClick(e) {
+            // Если ответ уже выбран, игнорируем клик
+            if (answerSelected[currentQuestionIndex]) {
+                return;
+            }
+            
+            const optionIndex = parseInt(e.currentTarget.getAttribute('data-index'));
+            userAnswers[currentQuestionIndex] = optionIndex;
+            answerSelected[currentQuestionIndex] = true;
+            
+            // Обновляем отображение выбранного варианта
+            const question = selectedQuestions[currentQuestionIndex];
+            
+            if (question.type === 'images') {
+                document.querySelectorAll('.image-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                e.currentTarget.classList.add('selected');
+            } else {
+                document.querySelectorAll('.option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                e.currentTarget.classList.add('selected');
+                
+                // Отключаем все варианты после выбора
+                document.querySelectorAll('.option').forEach(option => {
+                    option.classList.add('disabled');
+                });
+            }
+            
+            // Показываем feedback
+            showFeedback(currentQuestionIndex);
+        }
+
+        // Функция для показа обратной связи
+        function showFeedback(questionIndex) {
+            const question = selectedQuestions[questionIndex];
+            const userAnswer = userAnswers[questionIndex];
+            const feedbackElement = document.getElementById(`feedback-${questionIndex}`);
+            
+            if (userAnswer === question.correct) {
+                feedbackElement.textContent = "Правильно!";
+                feedbackElement.className = "feedback correct";
+            } else {
+                feedbackElement.textContent = `Неправильно! Правильный ответ: ${question.type === 'images' ? question.labels[question.correct] : question.options[question.correct]}`;
+                feedbackElement.className = "feedback incorrect";
+            }
+            
+            feedbackElement.style.display = "block";
+        }
+
+        // Функция для расчета результатов
+        function calculateResults() {
+            score = 0;
+            selectedQuestions.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    score++;
+                }
+            });
+            
+            const percentage = (score / selectedQuestions.length) * 100;
+            finalScore.textContent = `Вы набрали ${score} из ${selectedQuestions.length} (${percentage.toFixed(1)}%)`;
+            
+            if (percentage >= 80) {
+                testResult.textContent = "ОТЛИЧНЫЙ РЕЗУЛЬТАТ";
+                testResult.className = "result success";
+                resultMessage.textContent = "Поздравляем! Вы отлично знаете основы C/C++.";
+            } else if (percentage >= 60) {
+                testResult.textContent = "ХОРОШИЙ РЕЗУЛЬТАТ";
+                testResult.className = "result success";
+                resultMessage.textContent = "Хороший результат! Есть некоторые пробелы в знаниях.";
+            } else {
+                testResult.textContent = "НЕУДОВЛЕТВОРИТЕЛЬНЫЙ РЕЗУЛЬТАТ";
+                testResult.className = "result failure";
+                resultMessage.textContent = "Вам стоит повторить материал по основам C/C++.";
+            }
+        }
+
+        // Функция для завершения теста
+        function finishTest() {
+            // Подсчитываем результаты
+            calculateResults();
+            
+            // Показываем экран результатов
+            testScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+
+        // Обработчики событий для кнопок
+        startBtn.addEventListener('click', () => {
+            selectRandomQuestions();
+            userAnswers = new Array(selectedQuestions.length);
+            answerSelected = new Array(selectedQuestions.length);
+            startScreen.classList.add('hidden');
+            testScreen.classList.remove('hidden');
+            displayQuestion();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            answerSelected = [];
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < selectedQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        });
+
+        finishBtn.addEventListener('click', finishTest);
+    </script>
+</body>
+</html>
