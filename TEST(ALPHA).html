@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест по программированию на C/C++</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .question {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .question h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .options {
+            margin: 15px 0;
+        }
+        
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #eef7ff;
+        }
+        
+        .option.selected {
+            background-color: #d4edff;
+            border-left: 4px solid #3498db;
+        }
+        
+        .feedback {
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .correct {
+            background-color: #d4f8d4;
+            color: #2d5a2d;
+            border-left: 4px solid #28a745;
+        }
+        
+        .incorrect {
+            background-color: #f8d4d4;
+            color: #5a2d2d;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Тест по программированию на C/C++</h1>
+        <p>Проверьте свои знания основ программирования на C/C++</p>
+    </div>
+    
+    <div id="start-screen">
+        <div class="question">
+            <h3>Инструкция</h3>
+            <p>Тест состоит из 10 случайных вопросов по программированию на C/C++.</p>
+            <p>Выберите один вариант ответа для каждого вопроса. После выбора ответа вы сразу увидите результат.</p>
+            <p>В конце теста вы увидите свой общий результат.</p>
+            <button id="start-btn" class="button">Начать тест</button>
+        </div>
+    </div>
+    
+    <div id="test-screen" class="hidden">
+        <div id="question-container"></div>
+        
+        <div class="controls">
+            <button id="prev-btn" class="button" disabled>Предыдущий</button>
+            <button id="next-btn" class="button">Следующий</button>
+        </div>
+        
+        <div class="score">
+            Вопрос <span id="current-question">1</span> из <span id="total-questions">10</span>
+        </div>
+    </div>
+    
+    <div id="result-screen" class="hidden">
+        <div class="question">
+            <h3>Результаты теста</h3>
+            <div id="final-score" class="score"></div>
+            <p id="result-message"></p>
+            <button id="restart-btn" class="button">Пройти тест снова</button>
+        </div>
+    </div>
+
+    <script>
+        // База вопросов и ответов
+        const questions = [
+            {
+                question: "Что такое информация в контексте программирования?",
+                options: [
+                    "Сведения об окружающем мире, которые уменьшают неопределенность",
+                    "Данные, хранящиеся в памяти компьютера",
+                    "Любые символы, введенные с клавиатуры",
+                    "Результат выполнения программы"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое алгоритм?",
+                options: [
+                    "Точная, конечная последовательность действий, приводящая к решению задачи",
+                    "Любая программа на языке C++",
+                    "Способ хранения данных в памяти",
+                    "Метод отладки программ"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой тип данных в C++ используется для хранения символов?",
+                options: [
+                    "char",
+                    "string",
+                    "int",
+                    "float"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для базового присваивания в C++?",
+                options: [
+                    "=",
+                    "==",
+                    ":=",
+                    "<-"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция является главной в программе на C++?",
+                options: [
+                    "main()",
+                    "start()",
+                    "init()",
+                    "run()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая библиотека используется для потокового ввода-вывода в C++?",
+                options: [
+                    " <iostream> ",
+                    " <stdio.h> ",
+                    " <stream> ",
+                    " <io> "
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для выхода из цикла?",
+                options: [
+                    "break",
+                    "exit",
+                    "stop",
+                    "return"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор перехода не рекомендуется к использованию?",
+                options: [
+                    "goto",
+                    "break",
+                    "continue",
+                    "return"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для организации цикла с предусловием?",
+                options: [
+                    "while",
+                    "for",
+                    "do-while",
+                    "loop"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое пространство имен (namespace) в C++?",
+                options: [
+                    "Область видимости, предотвращающая конфликты имен",
+                    "Место хранения переменных в памяти",
+                    "Способ организации файлов в проекте",
+                    "Метод группировки функций"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод используется для пошагового выполнения программы в отладчике?",
+                options: [
+                    "Step Into",
+                    "Run",
+                    "Build",
+                    "Compile"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод численного интегрирования использует приближение площади трапециями?",
+                options: [
+                    "Метод трапеций",
+                    "Метод парабол (Симпсона)",
+                    "Метод дихотомии",
+                    "Метод касательных (Ньютона)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой метод поиска корня уравнения использует деление отрезка пополам?",
+                options: [
+                    "Метод дихотомии (половинного деления)",
+                    "Метод трапеций",
+                    "Метод парабол (Симпсона)",
+                    "Метод касательных (Ньютона)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой модификатор убирает знак у целочисленного типа?",
+                options: [
+                    "unsigned",
+                    "signed",
+                    "static",
+                    "const"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая операция выполняет побитовое И?",
+                options: [
+                    "&",
+                    "|",
+                    "^",
+                    "~"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как объявляется строка в стиле C?",
+                options: [
+                    "char str[100];",
+                    "string str;",
+                    "char *str;",
+                    "str::string;"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какая функция используется для определения длины строки в C?",
+                options: [
+                    "strlen()",
+                    "length()",
+                    "sizeof()",
+                    "strlength()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Что такое указатель?",
+                options: [
+                    "Переменная, хранящая адрес памяти другой переменной",
+                    "Специальный тип данных для хранения чисел",
+                    "Функция для работы с памятью",
+                    "Оператор для доступа к элементам массива"
+                ],
+                correct: 0
+            },
+            {
+                question: "Какой оператор используется для выделения памяти под массив в C++?",
+                options: [
+                    "new[]",
+                    "malloc",
+                    "alloc",
+                    "create"
+                ],
+                correct: 0
+            },
+            {
+                question: "Как передаются массивы в функции в C++?",
+                options: [
+                    "По указателю на первый элемент",
+                    "По значению",
+                    "По ссылке",
+                    "По копии"
+                ],
+                correct: 0
+            }
+        ];
+
+        // Переменные состояния теста
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+        let selectedQuestions = [];
+
+        // Элементы DOM
+        const startScreen = document.getElementById('start-screen');
+        const testScreen = document.getElementById('test-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionContainer = document.getElementById('question-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const finalScore = document.getElementById('final-score');
+        const resultMessage = document.getElementById('result-message');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Функция для выбора случайных вопросов
+        function selectRandomQuestions() {
+            const shuffled = [...questions].sort(() => 0.5 - Math.random());
+            selectedQuestions = shuffled.slice(0, 10);
+        }
+
+        // Функция для отображения вопроса
+        function displayQuestion() {
+            const question = selectedQuestions[currentQuestionIndex];
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            totalQuestionsSpan.textContent = selectedQuestions.length;
+            
+            let optionsHTML = '';
+            question.options.forEach((option, index) => {
+                const isSelected = userAnswers[currentQuestionIndex] === index;
+                optionsHTML += `
+                    <div class="option ${isSelected ? 'selected' : ''}" data-index="${index}">
+                        ${option}
+                    </div>
+                `;
+            });
+            
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <h3>Вопрос ${currentQuestionIndex + 1}</h3>
+                    <p>${question.question}</p>
+                    <div class="options">
+                        ${optionsHTML}
+                    </div>
+                    <div id="feedback-${currentQuestionIndex}" class="feedback"></div>
+                </div>
+            `;
+            
+            // Добавляем обработчики событий для вариантов ответов
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', handleOptionClick);
+            });
+            
+            // Обновляем состояние кнопок
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === selectedQuestions.length - 1;
+            
+            // Показываем feedback, если ответ уже выбран
+            if (userAnswers[currentQuestionIndex] !== undefined) {
+                showFeedback(currentQuestionIndex);
+            }
+        }
+
+        // Обработчик выбора варианта ответа
+        function handleOptionClick(e) {
+            const optionIndex = parseInt(e.currentTarget.getAttribute('data-index'));
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Обновляем отображение выбранного варианта
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            e.currentTarget.classList.add('selected');
+            
+            // Показываем feedback
+            showFeedback(currentQuestionIndex);
+        }
+
+        // Функция для показа обратной связи
+        function showFeedback(questionIndex) {
+            const question = selectedQuestions[questionIndex];
+            const userAnswer = userAnswers[questionIndex];
+            const feedbackElement = document.getElementById(`feedback-${questionIndex}`);
+            
+            if (userAnswer === question.correct) {
+                feedbackElement.textContent = "Правильно!";
+                feedbackElement.className = "feedback correct";
+            } else {
+                feedbackElement.textContent = `Неправильно! Правильный ответ: ${question.options[question.correct]}`;
+                feedbackElement.className = "feedback incorrect";
+            }
+            
+            feedbackElement.style.display = "block";
+        }
+
+        // Функция для расчета результатов
+        function calculateResults() {
+            score = 0;
+            selectedQuestions.forEach((question, index) => {
+                if (userAnswers[index] === question.correct) {
+                    score++;
+                }
+            });
+            
+            const percentage = (score / selectedQuestions.length) * 100;
+            finalScore.textContent = `Вы набрали ${score} из ${selectedQuestions.length} (${percentage.toFixed(1)}%)`;
+            
+            if (percentage >= 80) {
+                resultMessage.textContent = "Отличный результат! Вы хорошо знаете основы C/C++.";
+            } else if (percentage >= 60) {
+                resultMessage.textContent = "Хороший результат! Есть некоторые пробелы в знаниях.";
+            } else {
+                resultMessage.textContent = "Вам стоит повторить материал по основам C/C++.";
+            }
+        }
+
+        // Обработчики событий для кнопок
+        startBtn.addEventListener('click', () => {
+            selectRandomQuestions();
+            userAnswers = new Array(selectedQuestions.length);
+            startScreen.classList.add('hidden');
+            testScreen.classList.remove('hidden');
+            displayQuestion();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < selectedQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                // Завершаем тест
+                calculateResults();
+                testScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
